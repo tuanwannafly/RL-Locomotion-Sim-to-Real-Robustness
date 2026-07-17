@@ -1,0 +1,31 @@
+# Sprint 2 ablation: energy + orientation (combined).
+algo: PPO
+env_id: Ant-v4
+seed: 0
+
+reward_shaping:
+  energy: 0.005
+  orientation: 0.5
+
+ppo:
+  learning_rate: 3.0e-4
+  n_steps: 2048
+  batch_size: 256
+  n_epochs: 10
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_range: 0.2
+  ent_coef: 0.0
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+  net_arch: [256, 256]
+
+training:
+  total_timesteps: 1000000
+  n_envs: 1
+  vec_normalize: true
+  device: cuda
+
+logging:
+  tensorboard_log: experiments/logs
+  save_freq: 50000

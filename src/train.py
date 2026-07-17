@@ -30,6 +30,7 @@ from stable_baselines3.common.callbacks import CheckpointCallback  # noqa: E402
 from stable_baselines3.common.monitor import Monitor  # noqa: E402
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize  # noqa: E402
 
+from src.envs.reward_wrappers import make_shaped_env  # noqa: E402
 from src.utils.config import load_config  # noqa: E402
 
 
@@ -70,14 +71,15 @@ def merge_config(args: argparse.Namespace) -> tuple[dict, str, int, str, str, in
     return cfg, env_id, timesteps, run_name, save_dir, seed, vecnorm
 
 
-def make_env_fn(env_id: str, seed: int, monitor_dir: str | None = None):
-    """Return a thunk that constructs a Monitor-wrapped env.
+def make_env_fn(env_id: str, seed: int, monitor_dir: str | None = None,
+                shaping_cfg: dict | None = None):
+    """Return a thunk that constructs a Monitor-wrapped env with reward shaping.
 
     If *monitor_dir* is given, the Monitor wrapper writes ``<monitor_dir>/<env_id>.monitor.csv``
     so the path is reproducible across runs.
     """
     def _thunk():
-        env = gym.make(env_id)
+        env = make_shaped_env(env_id, shaping_cfg=shaping_cfg)
         if monitor_dir is not None:
             os.makedirs(monitor_dir, exist_ok=True)
             env = Monitor(env, filename=os.path.join(monitor_dir, env_id))
@@ -102,7 +104,9 @@ def main() -> int:
     # Build env (single-env wrapped in DummyVecEnv -> VecNormalize optional)
     n_envs = int(train_cfg.get("n_envs", 1))
     monitor_dir = str(Path(__file__).resolve().parent.parent / "experiments" / "logs" / run_name)
-    env_fns = [make_env_fn(env_id, seed + i, monitor_dir=monitor_dir if i == 0 else None)
+    shaping_cfg = cfg.get("reward_shaping", {}) or {}
+    env_fns = [make_env_fn(env_id, seed + i, monitor_dir=monitor_dir if i == 0 else None,
+                           shaping_cfg=shaping_cfg)
                for i in range(n_envs)]
     if n_envs == 1:
         env = DummyVecEnv(env_fns)
@@ -133,6 +137,7 @@ def main() -> int:
     device = args.device or train_cfg.get("device", "cuda")
     print(f"[train] env={env_id}  timesteps={timesteps}  run={run_name}  device={device}")
     print(f"[train] save_dir={save_dir_path}  vecnorm={vecnorm}  n_envs={n_envs}")
+    print(f"[train] reward_shaping={shaping_cfg}")
     print(f"[train] ppo={ppo_cfg}")
 
     policy_kwargs = dict(
