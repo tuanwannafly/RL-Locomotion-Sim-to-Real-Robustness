@@ -1,0 +1,30 @@
+# RL Locomotion Sim-to-Real Robustness Project
+# Tested with Python 3.13
+
+# Core RL stack
+gymnasium[mujoco]>=0.29.1,<2.0
+mujoco>=3.8.0,<4.0
+stable-baselines3[extra]>=2.7,<3.0
+
+# PyTorch with CUDA (RTX 2050 needs CUDA 11.8 wheel; for CPU-only install default torch)
+# CUDA install: uv pip install torch==2.7.0 --index-url https://download.pytorch.org/whl/cu118 --reinstall
+torch>=2.5
+tensorboard>=2.18
+
+# Cross-engine eval (Sprint 5) - install in Sprint 5
+# pybullet has no Windows prebuilt wheels; build requires MSVC.
+# Install via: pip install git+https://github.com/bulletphysics/bullet3  (in Sprint 5)
+# pybullet>=3.25  # conda-forge has Windows wheels; pip does not
+
+# Visualization & video
+matplotlib>=3.9
+seaborn>=0.13
+imageio[ffmpeg]>=2.34
+imageio-ffmpeg>=0.5
+moviepy>=2.0
+pyyaml>=6.0
+
+# Utilities
+pandas>=2.2
+numpy<3.0
+tqdm>=4.66

@@ -1,0 +1,28 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# experiment artifacts (large binary; regenerate from training)
+experiments/logs/
+experiments/models/
+experiments/videos/
+experiments/plots/
+experiments/results/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Colab / Drive sync artefacts
+colab/_runtime/
+*.tmp
+
+# Cached model downloads (mujoco xmls fetched at runtime)
+~/.cache/

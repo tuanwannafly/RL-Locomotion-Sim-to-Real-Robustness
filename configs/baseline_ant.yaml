@@ -1,0 +1,25 @@
+# Sprint 1 placeholder — replaced by full config in Sprint 1.
+# Default SB3 PPO hyperparameters (will be tuned for Ant-v4).
+algo: PPO
+env_id: Ant-v4
+seed: 0
+
+ppo:
+  learning_rate: 3.0e-4
+  n_steps: 2048
+  batch_size: 256
+  n_epochs: 10
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_range: 0.2
+  ent_coef: 0.0
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+
+training:
+  total_timesteps: 2500000
+  device: cuda   # use "cpu" on Colab if no GPU
+
+logging:
+  tensorboard_log: experiments/logs
+  save_freq: 50000
