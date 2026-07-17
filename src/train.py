@@ -31,6 +31,7 @@ from stable_baselines3.common.monitor import Monitor  # noqa: E402
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize  # noqa: E402
 
 from src.envs.reward_wrappers import make_shaped_env  # noqa: E402
+from src.envs.dr_wrapper import make_dr_env  # noqa: E402
 from src.utils.config import load_config  # noqa: E402
 
 
@@ -72,14 +73,15 @@ def merge_config(args: argparse.Namespace) -> tuple[dict, str, int, str, str, in
 
 
 def make_env_fn(env_id: str, seed: int, monitor_dir: str | None = None,
-                shaping_cfg: dict | None = None):
-    """Return a thunk that constructs a Monitor-wrapped env with reward shaping.
+                shaping_cfg: dict | None = None, dr_cfg: dict | None = None):
+    """Return a thunk that constructs a Monitor-wrapped env with reward shaping
+    and optional domain randomization.
 
     If *monitor_dir* is given, the Monitor wrapper writes ``<monitor_dir>/<env_id>.monitor.csv``
     so the path is reproducible across runs.
     """
     def _thunk():
-        env = make_shaped_env(env_id, shaping_cfg=shaping_cfg)
+        env = make_dr_env(env_id, dr_cfg=dr_cfg, seed=seed, shaping_cfg=shaping_cfg)
         if monitor_dir is not None:
             os.makedirs(monitor_dir, exist_ok=True)
             env = Monitor(env, filename=os.path.join(monitor_dir, env_id))
@@ -105,8 +107,9 @@ def main() -> int:
     n_envs = int(train_cfg.get("n_envs", 1))
     monitor_dir = str(Path(__file__).resolve().parent.parent / "experiments" / "logs" / run_name)
     shaping_cfg = cfg.get("reward_shaping", {}) or {}
+    dr_cfg = cfg.get("domain_randomization", {}) or {}
     env_fns = [make_env_fn(env_id, seed + i, monitor_dir=monitor_dir if i == 0 else None,
-                           shaping_cfg=shaping_cfg)
+                           shaping_cfg=shaping_cfg, dr_cfg=dr_cfg)
                for i in range(n_envs)]
     if n_envs == 1:
         env = DummyVecEnv(env_fns)
@@ -138,6 +141,7 @@ def main() -> int:
     print(f"[train] env={env_id}  timesteps={timesteps}  run={run_name}  device={device}")
     print(f"[train] save_dir={save_dir_path}  vecnorm={vecnorm}  n_envs={n_envs}")
     print(f"[train] reward_shaping={shaping_cfg}")
+    print(f"[train] domain_randomization={ {k: v for k, v in dr_cfg.items() if k != 'enabled'} } (enabled={dr_cfg.get('enabled', False)})")
     print(f"[train] ppo={ppo_cfg}")
 
     policy_kwargs = dict(

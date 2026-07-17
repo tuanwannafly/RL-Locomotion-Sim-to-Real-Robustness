@@ -1,13 +1,18 @@
-# Sprint 1 — baseline PPO on Ant-v4.
+# Sprint 1 — baseline PPO on Ant-v4 (no domain randomization).
 # Tuned for Colab T4 (16 GB VRAM, batch 256); CPU fallback uses same config.
+# Reward shaping matches the DR config so the comparison in Sprint 4 is fair.
 algo: PPO
 env_id: Ant-v4
 seed: 0
 
+reward_shaping:
+  energy: 0.005
+  orientation: 0.5
+
 ppo:
   learning_rate: 3.0e-4
-  n_steps: 2048        # rollout length per env before update
-  batch_size: 256      # 8 minibatches per epoch over n_steps
+  n_steps: 2048
+  batch_size: 256
   n_epochs: 10
   gamma: 0.99
   gae_lambda: 0.95
@@ -15,14 +20,16 @@ ppo:
   ent_coef: 0.0
   vf_coef: 0.5
   max_grad_norm: 0.5
-  # Policy net arch: SB3 MlpPolicy with [256,256] actor/critic
   net_arch: [256, 256]
 
 training:
   total_timesteps: 2500000
-  n_envs: 1                       # single env to keep memory low
-  vec_normalize: true             # normalize observations
-  device: cuda                    # "cpu" works too, much slower
+  n_envs: 1
+  vec_normalize: true
+  device: cuda
+
+domain_randomization:
+  enabled: false
 
 logging:
   tensorboard_log: experiments/logs
