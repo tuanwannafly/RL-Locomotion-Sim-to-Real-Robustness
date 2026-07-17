@@ -1,7 +1,11 @@
-# Sprint 1b placeholder — replaced by full config in Sprint 1b.
+# Sprint 1b — baseline PPO on Walker2d-v4.
+# Same hyperparameters as Ant-v4 baseline; only env_id differs.
 algo: PPO
 env_id: Walker2d-v4
 seed: 0
+
+reward_shaping:
+  energy: 0.005
 
 ppo:
   learning_rate: 3.0e-4
@@ -14,9 +18,12 @@ ppo:
   ent_coef: 0.0
   vf_coef: 0.5
   max_grad_norm: 0.5
+  net_arch: [256, 256]
 
 training:
   total_timesteps: 2500000
+  n_envs: 1
+  vec_normalize: true
   device: cuda
 
 logging:
