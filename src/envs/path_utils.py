@@ -37,20 +37,6 @@ def short_path(long_path: str) -> str:
     return buf.value if n else long_path
 
 
-def short_path(long_path: str) -> str:
-    """Return the Windows 8.3 short path for *long_path*.
-
-    Falls back to the original path if conversion fails or is unavailable
-    (e.g. on non-Windows platforms, or when short-name generation is off)."""
-    if not long_path or not os.path.exists(long_path):
-        return long_path
-    if os.name != "nt":
-        return long_path
-    buf = ctypes.create_unicode_buffer(1024)
-    n = _GetShortPathNameW(long_path, buf, 1024)
-    return buf.value if n else long_path
-
-
 # ---------------------------------------------------------------------------
 # 2. Asset directory shadowing for gymnasium mujoco envs.
 #

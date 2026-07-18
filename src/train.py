@@ -143,8 +143,9 @@ def main() -> int:
     print(f"[train] domain_randomization={ {k: v for k, v in dr_cfg.items() if k != 'enabled'} } (enabled={dr_cfg.get('enabled', False)})")
     print(f"[train] ppo={ppo_cfg}")
 
+    net_arch_list = ppo_cfg.get("net_arch", [256, 256])
     policy_kwargs = dict(
-        net_arch=dict(pi=[256, 256], vf=[256, 256]),
+        net_arch=dict(pi=net_arch_list, vf=net_arch_list),
         activation_fn=__import__("torch.nn", fromlist=["ReLU"]).ReLU,
     )
 
