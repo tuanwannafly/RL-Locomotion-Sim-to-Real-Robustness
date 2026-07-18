@@ -121,10 +121,9 @@ def main() -> int:
         env = VecNormalize(env, norm_obs=True, norm_reward=False, gamma=ppo_cfg.get("gamma", 0.99))
 
     # TensorBoard log dir; SB3 creates the dir itself.
-    tb_root = log_cfg.get("tensorboard_log", "experiments/logs")
-    tb_dir = Path(tb_root) / run_name
+    tb_dir = save_dir_path / "tb"
     tb_dir.mkdir(parents=True, exist_ok=True)
-    tb_root = str(tb_dir.parent)  # SB3 expects the parent of the run folder
+    tb_root = str(tb_dir.parent)
     run_tb_dir = str(tb_dir)
 
     # Checkpoints during training (also final .zip saved via .save()).
