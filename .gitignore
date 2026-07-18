@@ -26,3 +26,6 @@ colab/_runtime/
 
 # Cached model downloads (mujoco xmls fetched at runtime)
 ~/.cache/
+
+#Ignore vscode AI rules
+.github\instructions\codacy.instructions.md
